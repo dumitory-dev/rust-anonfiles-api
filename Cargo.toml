@@ -1,0 +1,13 @@
+[package]
+name = "rust-anonfiles-api"
+version = "0.1.0"
+edition = "2021"
+authors = ["dumitory dumitory@gmail.com"]
+license = "MIT"
+repository = "https://github.com/dumitory-dev/rust-anonfiles-api"
+description = "A simple project for uploading files to anonfiles.com"
+readme = "README.md"
+
+[dependencies]
+curl = "0.4.43"
+regex = "1.5"
