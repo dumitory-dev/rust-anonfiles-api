@@ -6,7 +6,7 @@ A simple project for uploading files to anonfiles.com
 
 ## Usage Example
 
-```cpp
+```rust
 use rust_anonfiles_api;
 
 fn main() {
