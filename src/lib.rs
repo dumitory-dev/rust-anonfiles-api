@@ -33,32 +33,34 @@ fn send_post_req(url: &str, form_data: Option<Form>) -> Result<Vec<u8>, Box<dyn 
     Ok(response_data)
 }
 
-fn get_load_link_fron_resp(data: Vec<u8>) -> Result<String, String> {
-    const SHORT_LINK: u8 = 2;
-    let str_resp = match str::from_utf8(&data) {
+fn get_load_link_fron_resp(data: Vec<u8>) -> Result<String, Box<dyn error::Error>> {
+    const SHORT_LINK_INDEX: u8 = 2;
+    let response = match str::from_utf8(&data) {
         Ok(str_resp) => str_resp,
         Err(e) => {
-            return Err(format!(
-                "Anonfile: Invalid UTF-8 sequence from response: {}",
-                e
-            ))
+            return Err(format!("Anonfile: Invalid UTF-8 sequence from response: {}", e).into())
         }
     };
 
     let regex = Regex::new(r#"("short":")(\S+)("},"metadata")"#).unwrap();
 
-    if let Some(captures) = regex.captures(str_resp) {
-        if let Some(capture) = captures.get(SHORT_LINK.into()) {
+    if let Some(captures) = regex.captures(response) {
+        if let Some(capture) = captures.get(SHORT_LINK_INDEX.into()) {
             return Ok(capture.as_str().to_string());
         }
     }
 
-    Err(format!("Anonfile: Failed to parse json response!"))
+    Err(format!("Failed to parse json response! Response - {}", response).into())
 }
 
-pub fn load_file(
+pub fn upload_file(
     path_to_file: impl AsRef<std::path::Path>,
 ) -> Result<String, Box<dyn error::Error>> {
+    let file_path = path_to_file.as_ref();
+    if !file_path.exists() {
+        return Err(format!("File does not exist: {}", file_path.display()).into());
+    }
+
     let url = "https://api.anonfiles.com/upload";
     let mut form_data = Form::new();
 
@@ -67,9 +69,5 @@ pub fn load_file(
     }
 
     let resp_data = send_post_req(url, Some(form_data))?;
-    get_load_link_fron_resp(resp_data)
-}
-
-fn main() {
-    println!("Hello, world!");
+    get_load_link_fron_resp(resp_data).into()
 }
