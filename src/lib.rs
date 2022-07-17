@@ -57,7 +57,7 @@ fn get_load_link_fron_resp(data: Vec<u8>) -> Result<String, Box<dyn error::Error
 pub fn upload_file(
     path_to_file: impl AsRef<std::path::Path>,
 ) -> Result<String, Box<dyn error::Error>> {
-    const ANONFILE_URL: &str = "https://anonfile.com/api/upload";
+    const ANONFILE_URL: &str = "https://api.anonfiles.com/upload";
 
     let file_path = path_to_file.as_ref();
     if !file_path.exists() {
